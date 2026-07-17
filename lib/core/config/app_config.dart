@@ -7,5 +7,6 @@ class AppConfig {
   static const String tokenRefreshEndpoint = '/auth/token/refresh/';
   static const String coursesEndpoint = '/courses/';
   static const String categoriesEndpoint = '/categories/';
-  static const String usersEndpoint = '/users/';
+  static const String profileEndpoint = '/auth/profile/';
+  static const String notificationsEndpoint = '/notifications/';
 }

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:codeacademy/core/utils/validators.dart';
@@ -23,6 +25,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isTeacher = false;
   bool _isStudent = true;
   bool _obscurePassword = true;
+  Uint8List? _avatarBytes;
+  String? _avatarPath;
+
+  Future<void> _pickImage() async {
+    try {
+      final picker = ImagePicker();
+      final pickedFile = await picker.pickImage(
+        source: ImageSource.gallery,
+        maxWidth: 500,
+        maxHeight: 500,
+        imageQuality: 80,
+      );
+      if (pickedFile != null) {
+        final bytes = await pickedFile.readAsBytes();
+        setState(() {
+          _avatarBytes = bytes;
+          _avatarPath = kIsWeb ? pickedFile.name : pickedFile.path;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error al seleccionar imagen: $e'),
+            backgroundColor: AppColors.error,
+          ),
+        );
+      }
+    }
+  }
 
   @override
   void dispose() {
@@ -44,6 +76,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
       lastName: _lastNameController.text.trim(),
       isTeacher: _isTeacher,
       isStudent: _isStudent,
+      avatarPath: _avatarPath,
+      avatarBytes: _avatarBytes,
     );
 
     if (mounted) {
@@ -98,6 +132,31 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
+                      // Avatar selection
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: CircleAvatar(
+                          radius: 50,
+                          backgroundColor: AppColors.surface,
+                          backgroundImage: _avatarBytes != null ? MemoryImage(_avatarBytes!) : null,
+                          child: _avatarBytes == null
+                              ? const Icon(
+                                  Icons.camera_alt_outlined,
+                                  size: 40,
+                                  color: AppColors.textSecondary,
+                                )
+                              : null,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      TextButton(
+                        onPressed: _pickImage,
+                        child: Text(
+                          _avatarBytes == null ? 'Seleccionar Avatar' : 'Cambiar Avatar',
+                          style: const TextStyle(color: AppColors.primaryLight, fontSize: 13),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
                       TextFormField(
                         controller: _firstNameController,
                         decoration: const InputDecoration(

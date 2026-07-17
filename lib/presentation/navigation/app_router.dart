@@ -7,6 +7,7 @@ import 'package:codeacademy/presentation/providers/auth_provider.dart';
 import 'package:codeacademy/presentation/screens/auth/login_screen.dart';
 import 'package:codeacademy/presentation/screens/auth/register_screen.dart';
 import 'package:codeacademy/presentation/screens/auth/profile_screen.dart';
+import 'package:codeacademy/presentation/screens/notification/notification_screen.dart';
 import 'package:codeacademy/presentation/screens/catalog/catalog_screen.dart';
 import 'package:codeacademy/presentation/screens/catalog/course_detail_screen.dart';
 import 'package:codeacademy/presentation/screens/catalog/lesson_screen.dart';
@@ -46,7 +47,8 @@ class AppRouter {
                                state.matchedLocation.startsWith('/wishlist') ||
                                state.matchedLocation.startsWith('/lesson') ||
                                state.matchedLocation.startsWith('/certificates') ||
-                               state.matchedLocation == '/profile';
+                               state.matchedLocation == '/profile' ||
+                               state.matchedLocation == '/notifications';
 
         // 1. Si no está logueado y va a una ruta privada -> Mandar a Login
         if (!loggedIn && isPrivateRoute) {
@@ -96,6 +98,10 @@ class AppRouter {
         GoRoute(
           path: '/profile',
           builder: (context, state) => const ProfileScreen(),
+        ),
+        GoRoute(
+          path: '/notifications',
+          builder: (context, state) => const NotificationScreen(),
         ),
         GoRoute(
           path: '/cart',

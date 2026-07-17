@@ -6,6 +6,7 @@ import 'package:codeacademy/data/repository/auth_repository_impl.dart';
 import 'package:codeacademy/data/repository/catalog_repository_impl.dart';
 import 'package:codeacademy/data/repository/order_repository_impl.dart';
 import 'package:codeacademy/data/repository/admin_repository_impl.dart';
+import 'package:codeacademy/data/repository/notification_repository_impl.dart';
 import 'package:codeacademy/presentation/navigation/app_router.dart';
 import 'package:codeacademy/presentation/providers/auth_provider.dart';
 import 'package:codeacademy/presentation/providers/catalog_provider.dart';
@@ -13,6 +14,7 @@ import 'package:codeacademy/presentation/providers/cart_provider.dart';
 import 'package:codeacademy/presentation/providers/order_provider.dart';
 import 'package:codeacademy/presentation/providers/admin_provider.dart';
 import 'package:codeacademy/presentation/providers/teacher_provider.dart';
+import 'package:codeacademy/presentation/providers/notification_provider.dart';
 import 'package:codeacademy/theme/app_theme.dart';
 
 void main() {
@@ -34,6 +36,7 @@ class _MyAppState extends State<MyApp> {
   late final CatalogRepositoryImpl _catalogRepository;
   late final OrderRepositoryImpl _orderRepository;
   late final AdminRepositoryImpl _adminRepository;
+  late final NotificationRepositoryImpl _notificationRepository;
   late final AuthProvider _authProvider;
 
   @override
@@ -51,6 +54,7 @@ class _MyAppState extends State<MyApp> {
     _catalogRepository = CatalogRepositoryImpl(dio: dio);
     _orderRepository = OrderRepositoryImpl(dio: dio);
     _adminRepository = AdminRepositoryImpl(dio: dio);
+    _notificationRepository = NotificationRepositoryImpl(dio: dio, secureStorage: _secureStorage);
     
     _authProvider = AuthProvider(authRepository: _authRepository);
   }
@@ -79,6 +83,11 @@ class _MyAppState extends State<MyApp> {
         ChangeNotifierProvider<TeacherProvider>(
           create: (_) => TeacherProvider(
             catalogRepository: _catalogRepository,
+          ),
+        ),
+        ChangeNotifierProvider<NotificationProvider>(
+          create: (_) => NotificationProvider(
+            notificationRepository: _notificationRepository,
           ),
         ),
       ],

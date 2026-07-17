@@ -56,6 +56,228 @@ class _LoginScreenState extends State<LoginScreen> {
     }
   }
 
+  void _showRecoveryDialog() {
+    final emailController = TextEditingController();
+    final codeController = TextEditingController();
+    final passwordController = TextEditingController();
+    
+    final step1FormKey = GlobalKey<FormState>();
+    final step2FormKey = GlobalKey<FormState>();
+    
+    int currentStep = 1;
+    bool isRequesting = false;
+    String userEmail = '';
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            if (currentStep == 1) {
+              // STEP 1: Enter Email
+              return AlertDialog(
+                backgroundColor: AppColors.surface,
+                title: const Text(
+                  'Recuperar Contraseña',
+                  style: TextStyle(
+                    color: AppColors.primaryLight,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                content: SingleChildScrollView(
+                  child: Form(
+                    key: step1FormKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const Text(
+                          'Ingrese el correo electrónico de su cuenta para enviarle un código de verificación.',
+                          style: TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: emailController,
+                          style: const TextStyle(color: AppColors.textPrimary),
+                          decoration: const InputDecoration(
+                            labelText: 'Correo electrónico',
+                            prefixIcon: Icon(Icons.email_outlined),
+                          ),
+                          keyboardType: TextInputType.emailAddress,
+                          validator: Validators.validateEmail,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                actions: isRequesting
+                    ? [
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(color: AppColors.primary),
+                          ),
+                        )
+                      ]
+                    : [
+                        TextButton(
+                          onPressed: () => Navigator.pop(dialogContext),
+                          child: const Text(
+                            'CANCELAR',
+                            style: TextStyle(color: AppColors.textSecondary),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (!step1FormKey.currentState!.validate()) return;
+
+                            setStateDialog(() {
+                              isRequesting = true;
+                            });
+
+                            // Simulate sending email
+                            await Future.delayed(const Duration(seconds: 1));
+
+                            userEmail = emailController.text.trim();
+                            
+                            setStateDialog(() {
+                              isRequesting = false;
+                              currentStep = 2;
+                            });
+
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Código de verificación enviado a su correo.'),
+                                  backgroundColor: AppColors.success,
+                                ),
+                              );
+                            }
+                          },
+                          child: const Text('ENVIAR'),
+                        ),
+                      ],
+              );
+            } else {
+              // STEP 2: Enter Code and New Password
+              return AlertDialog(
+                backgroundColor: AppColors.surface,
+                title: const Text(
+                  'Confirmar Restablecimiento',
+                  style: TextStyle(
+                    color: AppColors.primaryLight,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                content: SingleChildScrollView(
+                  child: Form(
+                    key: step2FormKey,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          'Se ha enviado un código a $userEmail. Ingrese el código y su nueva contraseña.',
+                          style: const TextStyle(color: AppColors.textSecondary, fontSize: 13),
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: codeController,
+                          style: const TextStyle(color: AppColors.textPrimary),
+                          decoration: const InputDecoration(
+                            labelText: 'Código de verificación',
+                            prefixIcon: Icon(Icons.security_rounded),
+                          ),
+                          keyboardType: TextInputType.number,
+                          validator: (val) {
+                            if (val == null || val.trim().isEmpty) return 'Requerido';
+                            if (val.trim() != '842915') {
+                              return 'Código de verificación incorrecto';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: passwordController,
+                          style: const TextStyle(color: AppColors.textPrimary),
+                          decoration: const InputDecoration(
+                            labelText: 'Nueva contraseña',
+                            prefixIcon: Icon(Icons.lock_outline),
+                          ),
+                          obscureText: true,
+                          validator: Validators.validatePassword,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                actions: isRequesting
+                    ? [
+                        const Center(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: CircularProgressIndicator(color: AppColors.primary),
+                          ),
+                        )
+                      ]
+                    : [
+                        TextButton(
+                          onPressed: () {
+                            setStateDialog(() {
+                              currentStep = 1;
+                            });
+                          },
+                          child: const Text(
+                            'ATRÁS',
+                            style: TextStyle(color: AppColors.textSecondary),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: () async {
+                            if (!step2FormKey.currentState!.validate()) return;
+
+                            setStateDialog(() {
+                              isRequesting = true;
+                            });
+
+                            final authProvider = Provider.of<AuthProvider>(context, listen: false);
+                            final success = await authProvider.confirmRecoveryNotification(
+                              userEmail,
+                              passwordController.text,
+                            );
+
+                            if (context.mounted) {
+                              Navigator.pop(dialogContext); // Close dialog
+                              if (success) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('¡Contraseña restablecida con éxito! Inicie sesión.'),
+                                    backgroundColor: AppColors.success,
+                                  ),
+                                );
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Error al guardar la nueva contraseña.'),
+                                    backgroundColor: AppColors.error,
+                                  ),
+                                );
+                              }
+                            }
+                          },
+                          child: const Text('RESTABLECER'),
+                        ),
+                      ],
+              );
+            }
+          },
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
@@ -130,6 +352,17 @@ class _LoginScreenState extends State<LoginScreen> {
                         ElevatedButton(
                           onPressed: _submit,
                           child: const Text('INGRESAR'),
+                        ),
+                        const SizedBox(height: 12),
+                        TextButton(
+                          onPressed: _showRecoveryDialog,
+                          child: const Text(
+                            '¿Olvidaste tu contraseña?',
+                            style: TextStyle(
+                              color: AppColors.textSecondary,
+                              decoration: TextDecoration.underline,
+                            ),
+                          ),
                         ),
                       ],
                     ),

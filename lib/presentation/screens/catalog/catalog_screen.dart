@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:codeacademy/presentation/providers/auth_provider.dart';
 import 'package:codeacademy/presentation/providers/catalog_provider.dart';
 import 'package:codeacademy/presentation/providers/cart_provider.dart';
+import 'package:codeacademy/presentation/providers/notification_provider.dart';
 import 'package:codeacademy/presentation/widgets/category_chip.dart';
 import 'package:codeacademy/presentation/widgets/course_card.dart';
 import 'package:codeacademy/theme/app_colors.dart';
@@ -24,9 +25,15 @@ class _CatalogScreenState extends State<CatalogScreen> {
   void initState() {
     super.initState();
     Future.microtask(() {
-      if (!mounted) return;final catalogProvider = Provider.of<CatalogProvider>(context, listen: false);
+      if (!mounted) return;
+      final catalogProvider = Provider.of<CatalogProvider>(context, listen: false);
       catalogProvider.loadCategories();
       catalogProvider.loadCourses();
+
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      if (authProvider.isAuthenticated) {
+        Provider.of<NotificationProvider>(context, listen: false).loadNotifications();
+      }
     });
   }
 
@@ -59,30 +66,48 @@ class _CatalogScreenState extends State<CatalogScreen> {
     final catalogProvider = Provider.of<CatalogProvider>(context);
     final cartProvider = Provider.of<CartProvider>(context);
 
+    if (authProvider.isAuthenticated) {
+      final notificationProvider = Provider.of<NotificationProvider>(context, listen: false);
+      if (!notificationProvider.isLoading && notificationProvider.notifications.isEmpty) {
+        Future.microtask(() => notificationProvider.loadNotifications());
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('CodeAcademy'),
         actions: [
           // Notifications
           if (authProvider.isAuthenticated)
-            IconButton(
-              icon: const Stack(
-                clipBehavior: Clip.none,
-                children: [
-                  Icon(Icons.notifications_none_rounded),
-                  Positioned(
-                    right: 2,
-                    top: 2,
-                    child: CircleAvatar(
-                      radius: 4,
-                      backgroundColor: AppColors.error,
-                    ),
+            Consumer<NotificationProvider>(
+              builder: (context, notificationProvider, child) {
+                final unreadCount = notificationProvider.unreadCount;
+                return IconButton(
+                  tooltip: 'Notificaciones',
+                  icon: Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      const Icon(Icons.notifications_none_rounded),
+                      if (unreadCount > 0)
+                        Positioned(
+                          right: -2,
+                          top: -2,
+                          child: CircleAvatar(
+                            radius: 7,
+                            backgroundColor: AppColors.error,
+                            child: Text(
+                              unreadCount.toString(),
+                              style: const TextStyle(
+                                fontSize: 9,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
-                ],
-              ),
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('No tienes notificaciones nuevas')),
+                  onPressed: () => context.push('/notifications'),
                 );
               },
             ),

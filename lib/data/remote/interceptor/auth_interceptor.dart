@@ -65,12 +65,51 @@ class AuthInterceptor extends Interceptor {
           // Refresh failed, token is invalid or expired
           await _secureStorage.clearTokens();
           _onAuthExpired();
-          return handler.next(err);
+          
+          // Retry the request without Authorization header (handles public endpoints)
+          try {
+            final requestOptions = err.requestOptions;
+            requestOptions.headers.remove('Authorization');
+            
+            final dio = Dio(BaseOptions(baseUrl: AppConfig.baseUrl));
+            final retryResponse = await dio.request(
+              requestOptions.path,
+              data: requestOptions.data,
+              queryParameters: requestOptions.queryParameters,
+              options: Options(
+                method: requestOptions.method,
+                headers: requestOptions.headers,
+              ),
+            );
+            return handler.resolve(retryResponse);
+          } catch (retryError) {
+            return handler.next(err);
+          }
         }
       } else {
         // No refresh token available
         await _secureStorage.clearTokens();
         _onAuthExpired();
+        
+        // Retry the request without Authorization header (handles public endpoints)
+        try {
+          final requestOptions = err.requestOptions;
+          requestOptions.headers.remove('Authorization');
+          
+          final dio = Dio(BaseOptions(baseUrl: AppConfig.baseUrl));
+          final retryResponse = await dio.request(
+            requestOptions.path,
+            data: requestOptions.data,
+            queryParameters: requestOptions.queryParameters,
+            options: Options(
+              method: requestOptions.method,
+              headers: requestOptions.headers,
+            ),
+          );
+          return handler.resolve(retryResponse);
+        } catch (retryError) {
+          return handler.next(err);
+        }
       }
     }
     return handler.next(err);
