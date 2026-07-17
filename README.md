@@ -1,279 +1,131 @@
-# CodeAcademy - Aplicación Móvil en Flutter (Consumo de API Django)
-
-Este proyecto es una aplicación móvil desarrollada en **Flutter** utilizando **Arquitectura Limpia (Clean Architecture)**. La aplicación consume una **API REST desarrollada en Django**, implementando autenticación mediante **JWT**, control de acceso basado en roles (**RBAC**) y una separación clara entre la parte pública y privada.
-
----
-
-# 🎥 Demo del Proyecto
+# Evidencia Funcional
 
 ## Video Demostrativo Principal
 
-**https://youtu.be/Kp0fPLNpl5c**
+https://youtu.be/Kp0fPLNpl5c
 
 En este video se demuestra:
 
 - Navegación por la sección pública.
-- Inicio de sesión.
-- Consumo de la API.
+- Inicio de sesión con los diferentes roles.
+- Consumo de la API REST.
 - Operaciones CRUD.
-- Control de acceso por roles (Administrador, Docente y Estudiante).
-- Manejo de sesiones con JWT.
+- Control de acceso mediante JWT y RBAC.
 - Funcionamiento general de la aplicación.
-
----
 
 ## Video Complementario
 
-**https://youtu.be/IH08hAuo9H0**
+https://youtu.be/IH08hAuo9H0
 
-Este video muestra un recorrido adicional por la aplicación y la arquitectura implementada.
-
----
-
-## Repositorios y Documentación de la API
-
-* **Repositorio del Backend:** https://github.com/sergio001g/CodeAcademy_bakend
-* **API REST Base (Producción):** https://codeacademy-api.uaeftt-ute.site/api/
-* **Documentación Swagger:** https://codeacademy-api.uaeftt-ute.site/api/docs/
-* **Panel de Administración Django:** https://codeacademy-api.uaeftt-ute.site/admin/
-
----
-
-## Requisitos del Sistema y Configuración
-
-La aplicación consume directamente el backend de producción.
-
-La URL base se encuentra centralizada en:
-
-```
-lib/core/config/app_config.dart
-```
-
-Para cambiar el servidor únicamente modifique la constante correspondiente.
-
----
-
-# Credenciales de Prueba
-
-| Rol | Email | Contraseña |
-|------|-------|------------|
-| Administrador | admin@codeacademy.com | admin123 |
-| Docente | teacher@codeacademy.com | teacher123 |
-| Estudiante | student@codeacademy.com | student123 |
-
-### Permisos por Rol
-
-### Administrador
-
-- CRUD Usuarios
-- CRUD Cursos
-- CRUD Categorías
-- Acceso al Panel Administrativo
-
-### Docente
-
-- Crear cursos
-- Crear foros
-- Crear evaluaciones
-- Visualizar calificaciones
-- Administrar sus cursos
-
-### Estudiante
-
-- Matricularse en cursos
-- Completar lecciones
-- Participar en foros
-- Resolver cuestionarios
-- Obtener certificados
-
----
-
-# Funcionalidades Implementadas
-
-## ✅ Autenticación JWT
-
-- Login
-- Registro
-- Refresh Token
-- Persistencia segura con flutter_secure_storage
-- Interceptor Dio
-- Logout automático al expirar la sesión
-
-## ✅ Control de Acceso (RBAC)
-
-- Administrador
-- Docente
-- Estudiante
-
-Cada rol visualiza únicamente las opciones permitidas por el backend.
-
-## ✅ Consumo de API REST
-
-### Cursos
-
-- Listado
-- Detalle
-- Crear
-- Editar
-- Eliminar
-
-### Categorías
-
-- Listado
-- Crear
-- Editar
-- Eliminar
-
-### Usuarios
-
-- Listado
-- Crear usuarios
-
-### Foros
-
-- Crear
-- Listar
-- Comentar
-
-### Evaluaciones
-
-- Resolver exámenes
-- Ver resultados
-
----
-
-# Manejo de Estado
-
-- Provider
-- ChangeNotifier
-
----
-
-# Arquitectura
-
-```
-lib
-│
-├── core
-├── data
-├── domain
-├── presentation
-├── theme
-└── main.dart
-```
-
-El proyecto implementa **Clean Architecture**, separando responsabilidades en capas independientes:
-
-- Core
-- Data
-- Domain
-- Presentation
-- Theme
-
----
-
-# Estructura del Proyecto
-
-(Se mantiene toda la estructura de carpetas y archivos que ya tienes en el README.)
+Este video presenta un recorrido adicional por la aplicación y las principales funcionalidades implementadas.
 
 ---
 
 # Capturas de Pantalla
 
-## 1. Pantalla Pública
+## 1. Pantalla Principal Pública
 
-> Agregar captura aquí
+> Inserte aquí la captura de pantalla.
+
+![Pantalla Principal](docs/screenshots/public_home.png)
 
 ---
 
 ## 2. Pantalla de Login
 
-> Agregar captura aquí
+> Inserte aquí la captura de pantalla.
+
+![Login](docs/screenshots/login.png)
 
 ---
 
 ## 3. Dashboard Principal
 
-> Agregar captura aquí
+> Inserte aquí la captura de pantalla.
+
+![Dashboard](docs/screenshots/dashboard.png)
 
 ---
 
-## 4. Consumo de API (Listado)
+## 4. Listado Consumiendo la API
 
-> Agregar captura aquí
+> Inserte aquí la captura de pantalla.
+
+![Listado API](docs/screenshots/api_list.png)
 
 ---
 
-## 5. CRUD Exitoso
+## 5. Formulario de Creación o Edición
 
-> Agregar captura aquí
+> Inserte aquí la captura de pantalla.
+
+![Formulario](docs/screenshots/form.png)
 
 ---
 
 ## 6. Restricción por Rol (RBAC)
 
-> Agregar captura aquí
+> Inserte aquí la captura de pantalla.
+
+![RBAC](docs/screenshots/rbac.png)
 
 ---
 
-## 7. Perfil del Estudiante
+## 7. Panel del Estudiante
 
-> Agregar captura aquí
+> Inserte aquí la captura de pantalla.
+
+![Estudiante](docs/screenshots/student.png)
 
 ---
 
 ## 8. Panel del Docente
 
-> Agregar captura aquí
+> Inserte aquí la captura de pantalla.
+
+![Docente](docs/screenshots/teacher.png)
 
 ---
 
 ## 9. Panel del Administrador
 
-> Agregar captura aquí
+> Inserte aquí la captura de pantalla.
+
+![Administrador](docs/screenshots/admin.png)
 
 ---
 
 ## 10. Gestión de Cursos
 
-> Agregar captura aquí
+> Inserte aquí la captura de pantalla.
+
+![Cursos](docs/screenshots/courses.png)
 
 ---
 
-# Instalación
+# Instalación y Ejecución
+
+1. Clonar el repositorio.
 
 ```bash
-git clone <repositorio>
+git clone <URL_DEL_REPOSITORIO>
+```
 
+2. Instalar las dependencias.
+
+```bash
 flutter pub get
+```
 
+3. Ejecutar la aplicación.
+
+```bash
 flutter run
 ```
 
 ## Requisitos
 
-- Flutter >= 3.0
-- Dart compatible
-- Android Studio o VS Code
-- Emulador Android/iOS o dispositivo físico
-
----
-
-# Tecnologías Utilizadas
-
-- Flutter
-- Dart
-- Provider
-- Dio
-- JWT
-- Flutter Secure Storage
-- GoRouter
-- Django REST Framework
-- PostgreSQL
-- Swagger/OpenAPI
-
----
-
-# Autor
-
-Proyecto desarrollado como entrega final de la materia de Desarrollo de Aplicaciones Móviles utilizando Flutter y Django REST Framework.
+- Flutter 3.x o superior.
+- Dart compatible con la versión de Flutter.
+- Android Studio o Visual Studio Code.
+- Emulador Android/iOS o dispositivo físico.
